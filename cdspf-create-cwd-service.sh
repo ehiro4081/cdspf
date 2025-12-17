@@ -5,7 +5,7 @@ set -Eeuo pipefail
 # Arguments
 # =========
 RUN_ID="${1:-}"
-ALARM_PREFIX="${2:-}"
+SEARCH_PREFIX="${2:-}"
 
 [[ -n "${RUN_ID}" ]] || {
   echo "ERROR: RUN_ID is required"
@@ -13,8 +13,8 @@ ALARM_PREFIX="${2:-}"
   exit 1
 }
 
-[[ -n "${ALARM_PREFIX}" ]] || {
-  echo "ERROR: ALARM_PREFIX is required"
+[[ -n "${SEARCH_PREFIX}" ]] || {
+  echo "ERROR: SEARCH_PREFIX is required"
   echo "Example: cdspf-stg-ap-ne1-1-"
   exit 1
 }
@@ -25,6 +25,8 @@ ALARM_PREFIX="${2:-}"
 AWS_REGION="${AWS_REGION:-ap-northeast-1}"
 AWS_PROFILE="${AWS_PROFILE:-}"
 STACK_PREFIX="${STACK_PREFIX:-cdspf-stg-ap-ne1-1}"
+ALARM_PREFIX1="PluginQueueDepthAlarm"
+ALARM_PREFIX2="PluginQueueTimeAlarm"
 
 export AWS_PAGER=""
 
@@ -133,35 +135,35 @@ main() {
     "${RUN_ID}DB-Query-Analysis-Dashboard-Stack" \
     "DB_Query_Analysis.yaml" \
     "LogGroupName" \
-    "^${ALARM_PREFIX}[0-9]{2}-[0-9]{2}-[0-9]{14}$"
+    "^cdspf/${SEARCH_PREFIX}[0-9]{2}-[0-9]{2}-[0-9]{14}$"
 
   deploy_with_alarms \
     "${RUN_ID}Service-IWpro-Auto-Dashboard-Stack" \
     "Service_IWpro-Auto.yaml" \
-    "DocumentsetPluginQueueDepthAlarm" "^${ALARM_PREFIX}.*PluginQueueDepthAlarm.*$" \
-    "DocumentsetPluginQueueTimeAlarm"  "^${ALARM_PREFIX}.*PluginQueueTimeAlarm.*$" \
-    "DxpfImageProcessingPluginQueueDepthAlarm" "^${ALARM_PREFIX}.*PluginQueueDepthAlarm.*$" \
-    "DxpfImageProcessingPluginQueueTimeAlarm"  "^${ALARM_PREFIX}.*PluginQueueTimeAlarm.*$"
+    "DocumentsetPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
+    "DocumentsetPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$" \
+    "DxpfImageProcessingPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
+    "DxpfImageProcessingPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
 
   deploy_with_alarms \
     "${RUN_ID}Service-IWpro-DMS-Dashboard-Stack" \
     "Service_IWpro-DMS.yaml" \
-    "DaitoRegistrationPluginQueueDepthAlarm" "^${ALARM_PREFIX}.*PluginQueueDepthAlarm.*$" \
-    "DaitoRegistrationPluginQueueTimeAlarm"  "^${ALARM_PREFIX}.*PluginQueueTimeAlarm.*$"
+    "DaitoRegistrationPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
+    "DaitoRegistrationPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
 
   deploy_with_alarms \
     "${RUN_ID}Service-NPS-Dashboard-Stack" \
     "Service_NPS.yaml" \
-    "MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm" "^${ALARM_PREFIX}.*PluginQueueDepthAlarm.*$" \
-    "MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm"  "^${ALARM_PREFIX}.*PluginQueueTimeAlarm.*$"
+    "MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
+    "MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
 
   deploy_with_alarms \
     "${RUN_ID}Service-attention-Dashboard-Stack" \
     "Service_attention.yaml" \
-    "FormatConversionPluginQueueDepthAlarm" "^${ALARM_PREFIX}.*PluginQueueDepthAlarm.*$" \
-    "FormatConversionPluginQueueTimeAlarm"  "^${ALARM_PREFIX}.*PluginQueueTimeAlarm.*$" \
-    "ImageOperationPluginQueueDepthAlarm" "^${ALARM_PREFIX}.*PluginQueueDepthAlarm.*$" \
-    "ImageOperationPluginQueueTimeAlarm"  "^${ALARM_PREFIX}.*PluginQueueTimeAlarm.*$"
+    "FormatConversionPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
+    "FormatConversionPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$" \
+    "ImageOperationPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
+    "ImageOperationPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
 
   log "All dashboards deployed successfully"
 }
