@@ -26,12 +26,13 @@ if [ -z "$LOG_GROUP_NAME_OLD" ]; then
 fi
 echo "Found alarm name: $LOG_GROUP_NAME_OLD"
 
+DB_NAME="cdspf-dev-ap-ne1"
 
 # CloudFormationデプロイ。テンプレートファイルは DB_Query_Analysys.yaml
 aws cloudformation deploy \
   --template-file DB_Query_Analysis.yaml \
   --stack-name "$STACK_NAME" \
-  --parameter-overrides LogGroupNameNew="$LOG_GROUP_NAME_NEW" LogGroupNameOld="$LOG_GROUP_NAME_OLD"\
+  --parameter-overrides LogGroupNameNew="$LOG_GROUP_NAME_NEW" LogGroupNameOld="$LOG_GROUP_NAME_OLD" DBName="$DB_NAME" \
   --capabilities CAPABILITY_NAMED_IAM
 
 # 既存のCloudFormationスタック削除：cdspf-stg-ap-ne1-1-11-13-2025-12-03T10-57-17-Service-IWpro-Auto-Dashboard-Stack

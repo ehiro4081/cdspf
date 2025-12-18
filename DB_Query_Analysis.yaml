@@ -10,6 +10,9 @@ Parameters:
     LogGroupNameOld:
         Type: String
         Description: "LogGroupNameOld"
+    DBName:
+        Type: String
+        Description: "DBName"    
 
 Resources:
     CloudWatchDashboard:
@@ -48,7 +51,7 @@ Resources:
                     "width": 24,
                     "height": 7,
                     "properties": {
-                      "query": "SOURCE '/aws/rds/instance/cdspf-dev-ap-ne1/slowquery' | fields @timestamp, @message\n| filter @message like /Query_time:/\n| parse @message /#.*Query_time: (?<queryTime>\\d+\\.\\d+)  Lock_time.*/ \n| parse @message /SET timestamp=\\d+;\\n(?<sql>[\\s\\S]*)/ \n| filter queryTime >= 60\n| sort @timestamp desc\n| display @timestamp,queryTime,sql\n| limit 10000",
+                      "query": "SOURCE '/aws/rds/instance/${DBName}/slowquery' | fields @timestamp, @message\n| filter @message like /Query_time:/\n| parse @message /#.*Query_time: (?<queryTime>\\d+\\.\\d+)  Lock_time.*/ \n| parse @message /SET timestamp=\\d+;\\n(?<sql>[\\s\\S]*)/ \n| filter queryTime >= 60\n| sort @timestamp desc\n| display @timestamp,queryTime,sql\n| limit 10000",
                       "queryLanguage": "CWLI",
                       "region": "${AWS::Region}",
                       "title": "スロークエリ一覧（>60秒）",

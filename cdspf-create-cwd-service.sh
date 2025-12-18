@@ -6,6 +6,9 @@ set -Eeuo pipefail
 # =========
 RUN_ID="${1:-}"
 SEARCH_PREFIX="${2:-}"
+LOG_GROUP_NAME_NEW="${3:-}"
+LOG_GROUP_NAME_OLD="${4:-}"
+DB_NAME="${5:-}"
 
 [[ -n "${RUN_ID}" ]] || {
   echo "ERROR: RUN_ID is required"
@@ -16,6 +19,24 @@ SEARCH_PREFIX="${2:-}"
 [[ -n "${SEARCH_PREFIX}" ]] || {
   echo "ERROR: SEARCH_PREFIX is required"
   echo "Example: cdspf-stg-ap-ne1-1-"
+  exit 1
+}
+
+[[ -n "${LOG_GROUP_NAME_NEW}" ]] || {
+  echo "ERROR: New LogGroup name (3rd arg) is required"
+  echo "Example: cdspf/.... (new log group)"
+  exit 1
+}
+
+[[ -n "${LOG_GROUP_NAME_OLD}" ]] || {
+  echo "ERROR: Old LogGroup name (4th arg) is required"
+  echo "Example: cdspf/.... (old log group)"
+  exit 1
+}
+
+[[ -n "${DB_NAME}" ]] || {
+  echo "ERROR: DB name (5th arg) is required"
+  echo "Example: cdspf-dev-ap-ne1"
   exit 1
 }
 
@@ -73,13 +94,13 @@ deploy_stack() {
 # =========
 # Finders
 # =========
-find_latest_log_group() {
-  local regex="$1"
-  aws_cli logs describe-log-groups \
-    --query 'logGroups[].logGroupName' \
-    --output json |
-  jq -r "map(select(test(\"${regex}\"))) | sort | last // empty"
-}
+#find_latest_log_group() {
+#  local regex="$1"
+#  aws_cli logs describe-log-groups \
+#    --query 'logGroups[].logGroupName' \
+#    --output json |
+#  jq -r "map(select(test(\"${regex}\"))) | sort | last // empty"
+#}
 
 find_latest_alarm() {
   local regex="$1"
@@ -97,14 +118,14 @@ require_value() {
 # High-level helpers
 # =========
 deploy_with_log_group() {
-  local stack="$1" template="$2" param="$3" regex="$4"
+   # ---- DB_Query_Analysis (pass both new/old log groups) ----
+  STACK_NAME="${RUN_ID}DB-Query-Analysis-Dashboard-Stack"
+  delete_stack_if_exists "${STACK_NAME}"
 
-  local lg
-  lg="$(find_latest_log_group "${regex}")"
-  require_value "LogGroup (${regex})" "${lg}"
-
-  delete_stack_if_exists "${stack}"
-  deploy_stack "${stack}" "${template}" "${param}=${lg}"
+  deploy_stack "${STACK_NAME}" "DB_Query_Analysis.yaml" \
+    "LogGroupNameNew=cdspf/${LOG_GROUP_NAME_NEW}" \
+    "LogGroupNameOld=cdspf/${LOG_GROUP_NAME_OLD}" \
+    "DBName=${DB_NAME}"
 }
 
 deploy_with_alarms() {
@@ -130,11 +151,7 @@ main() {
   need_cmd aws
   need_cmd jq
 
-  deploy_with_log_group \
-    "${RUN_ID}DB-Query-Analysis-Dashboard-Stack" \
-    "DB_Query_Analysis.yaml" \
-    "LogGroupName" "LogGroupName" \
-    "^cdspf/${SEARCH_PREFIX}[0-9]{2}-[0-9]{2}-[0-9]{14}$"
+  deploy_with_log_group
 
   deploy_with_alarms \
     "${RUN_ID}Service-IWpro-Auto-Dashboard-Stack" \
