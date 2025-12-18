@@ -4,23 +4,34 @@ aws cloudformation delete-stack --stack-name "$STACK_NAME"
 echo "Delete CloudFormation stack: $STACK_NAME"
 
 # ロググループ名の取得：DB_Query_Analysys
-LOG_GROUP_NAME=$(aws logs describe-log-groups --query 'logGroups[].logGroupName' --output json | \
+LOG_GROUP_NAME_NEW=$(aws logs describe-log-groups --query 'logGroups[].logGroupName' --output json | \
 jq -r '
-  map(select(test("^cdspf/cdspf-stg-ap-ne1-1-\\d{2}-\\d{2}-\\d{14}$"))) |
+  map(select(test("^cdspf/cdspf-stg-ap-ne1-1-11-13-\\d{14}$"))) |
   max
 ')
-if [ -z "$LOG_GROUP_NAME" ]; then
+if [ -z "$LOG_GROUP_NAME_NEW" ]; then
   echo "No matching CloudWatch Log Group found."
   exit 1
 fi
-echo "Found alarm name: $LOG_GROUP_NAME"
+echo "Found alarm name: $LOG_GROUP_NAME_NEW"
+
+LOG_GROUP_NAME_OLD=$(aws logs describe-log-groups --query 'logGroups[].logGroupName' --output json | \
+jq -r '
+  map(select(test("^cdspf/cdspf-stg-ap-ne1-1-11-12-\\d{14}$"))) |
+  max
+')
+if [ -z "$LOG_GROUP_NAME_OLD" ]; then
+  echo "No matching CloudWatch Log Group found."
+  exit 1
+fi
+echo "Found alarm name: $LOG_GROUP_NAME_OLD"
 
 
 # CloudFormationデプロイ。テンプレートファイルは DB_Query_Analysys.yaml
 aws cloudformation deploy \
   --template-file DB_Query_Analysis.yaml \
   --stack-name "$STACK_NAME" \
-  --parameter-overrides LogGroupName="$LOG_GROUP_NAME" \
+  --parameter-overrides LogGroupNameNew="$LOG_GROUP_NAME_NEW" LogGroupNameOld="$LOG_GROUP_NAME_OLD"\
   --capabilities CAPABILITY_NAMED_IAM
 
 # 既存のCloudFormationスタック削除：cdspf-stg-ap-ne1-1-11-13-2025-12-03T10-57-17-Service-IWpro-Auto-Dashboard-Stack

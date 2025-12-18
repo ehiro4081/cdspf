@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    Generator: "former2"
+Description: ""
+
+Parameters:
+    LogGroupNameNew:
+        Type: String
+        Description: "LogGroupNameNew"
+    LogGroupNameOld:
+        Type: String
+        Description: "LogGroupNameOld"
+
+Resources:
+    CloudWatchDashboard:
+        Type: "AWS::CloudWatch::Dashboard"
+        Properties:
+            DashboardName: "DB_Query_Analysis"
+            DashboardBody: !Sub |
+              {
+                "start": "-PT24H",
+                "widgets": [
+                  {
+                    "type": "log",
+                    "x": 0,
+                    "y": 0,
+                    "width": 24,
+                    "height": 6,
+                    "properties": {
+                      "query": "SOURCE \"${LogGroupNameNew}\" | SOURCE \"${LogGroupNameOld}\" |\nfilter @logStream like /task-service-system/\n| fields @timestamp, @message\n| filter @message like /,TaskDefInvoker,.*\"type\":\"system:startTask\".*,\"taskDefId\":\"daito-scan-main/\n| parse @message /,(?<requestId>[^,]+),[^,]*,task-service,.*\"id\":\"(?<taskInstanceId>[^,]+)\".*\"userId\":\"(?<userId>[^\\\"]*)\".*\"contentUris\":\\[\"(?<contentUri>[^\\\"]+)\".*\"filename\":\"(?<filename>[^\"]+)\"/\n| stats min(@timestamp),count(taskInstanceId) as taskCount by userId,contentUri,filename\n| filter taskCount > 1\n| limit 10000",
+                      "queryBy": "logGroupNames",
+                      "logGroupNames": ["${LogGroupNameNew}", "${LogGroupNameOld}"],
+                      "logGroupPrefixes": {
+                        "logClass": "STANDARD",
+                        "logGroupPrefix": [],
+                        "accountIds": []
+                      },
+                      "region": "${AWS::Region}",
+                      "stacked": false,
+                      "title": "Daito重複登録可能性一覧（#77578）_リリース時にロググループの更新要",
+                      "view": "table"
+                    }
+                  },
+                  {
+                    "type": "log",
+                    "x": 0,
+                    "y": 6,
+                    "width": 24,
+                    "height": 7,
+                    "properties": {
+                      "query": "SOURCE '/aws/rds/instance/cdspf-dev-ap-ne1/slowquery' | fields @timestamp, @message\n| filter @message like /Query_time:/\n| parse @message /#.*Query_time: (?<queryTime>\\d+\\.\\d+)  Lock_time.*/ \n| parse @message /SET timestamp=\\d+;\\n(?<sql>[\\s\\S]*)/ \n| filter queryTime >= 60\n| sort @timestamp desc\n| display @timestamp,queryTime,sql\n| limit 10000",
+                      "queryLanguage": "CWLI",
+                      "region": "${AWS::Region}",
+                      "title": "スロークエリ一覧（>60秒）",
+                      "view": "table"
+                    }
+                  }
+                ]
+              }
+
+

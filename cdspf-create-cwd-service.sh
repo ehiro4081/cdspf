@@ -133,7 +133,7 @@ main() {
   deploy_with_log_group \
     "${RUN_ID}DB-Query-Analysis-Dashboard-Stack" \
     "DB_Query_Analysis.yaml" \
-    "LogGroupName" \
+    "LogGroupName" "LogGroupName" \
     "^cdspf/${SEARCH_PREFIX}[0-9]{2}-[0-9]{2}-[0-9]{14}$"
 
   deploy_with_alarms \
