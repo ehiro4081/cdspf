@@ -24,7 +24,6 @@ SEARCH_PREFIX="${2:-}"
 # =========
 AWS_REGION="${AWS_REGION:-ap-northeast-1}"
 AWS_PROFILE="${AWS_PROFILE:-}"
-STACK_PREFIX="${STACK_PREFIX:-cdspf-stg-ap-ne1-1}"
 ALARM_PREFIX1="PluginQueueDepthAlarm"
 ALARM_PREFIX2="PluginQueueTimeAlarm"
 
