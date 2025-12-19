@@ -22,80 +22,81 @@ Resources:
     Type: "AWS::CloudWatch::Dashboard"
     Properties:
       DashboardName: "Service_attention"
-      DashboardBody: !Sub |
-        {
-          "widgets": [
-            {
-              "type": "metric",
-              "x": 0,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${FormatConversionPluginQueueDepthAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${FormatConversionPluginQueueDepthAlarm}"
+      DashboardBody:
+        Fn::Sub: |
+          {
+            "widgets": [
+              {
+                "type": "metric",
+                "x": 0,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${FormatConversionPluginQueueDepthAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${FormatConversionPluginQueueDepthAlarm}"
                     ]
-                 },
-                 "view": "timeSeries",
-                 "stacked": false,
-                 "type": "chart"
-              }
-            },
-            {
-              "type": "metric",
-              "x": 10,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${FormatConversionPluginQueueTimeAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${FormatConversionPluginQueueTimeAlarm}"
-                    ]
-                 },
-                 "view": "timeSeries",
-                 "stacked": false,
-                 "type": "chart"
-               }
-            },
-            {
-              "type": "metric",
-              "x": 0,
-              "y": 10,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${ImageOperationPluginQueueDepthAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ImageOperationPluginQueueDepthAlarm}"
-                    ]
-                 },
-                 "view": "timeSeries",
-                 "stacked": false,
-                 "type": "chart"
+                   },
+                   "view": "timeSeries",
+                   "stacked": false,
+                   "type": "chart"
                 }
-             },
-            {
-              "type": "metric",
-              "x": 10,
-              "y": 10,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${ImageOperationPluginQueueTimeAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ImageOperationPluginQueueTimeAlarm}"
+              },
+              {
+                "type": "metric",
+                "x": 10,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${FormatConversionPluginQueueTimeAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${FormatConversionPluginQueueTimeAlarm}"
                     ]
+                   },
+                   "view": "timeSeries",
+                   "stacked": false,
+                   "type": "chart"
+                 }
+              },
+              {
+                "type": "metric",
+                "x": 0,
+                "y": 10,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${ImageOperationPluginQueueDepthAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ImageOperationPluginQueueDepthAlarm}"
+                    ]
+                   },
+                   "view": "timeSeries",
+                   "stacked": false,
+                   "type": "chart"
+                  }
                 },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
+              {
+                "type": "metric",
+                "x": 10,
+                "y": 10,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${ImageOperationPluginQueueTimeAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ImageOperationPluginQueueTimeAlarm}"
+                    ]
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
               }
-            }
-          ]
-        }
+            ]
+          }

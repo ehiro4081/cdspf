@@ -24,80 +24,81 @@ Resources:
     Type: AWS::CloudWatch::Dashboard
     Properties:
       DashboardName: Service_IWpro-Auto
-      DashboardBody: !Sub |
-        {
-          "widgets": [
-            {
-              "type": "metric",
-              "x": 0,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${DocumentsetPluginQueueDepthAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DocumentsetPluginQueueDepthAlarm}"
-                  ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
+      DashboardBody:
+        Fn::Sub: |
+          {
+            "widgets": [
+              {
+                "type": "metric",
+                "x": 0,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${DocumentsetPluginQueueDepthAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DocumentsetPluginQueueDepthAlarm}"
+                    ]
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
+              },
+              {
+                "type": "metric",
+                "x": 10,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${DocumentsetPluginQueueTimeAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DocumentsetPluginQueueTimeAlarm}"
+                    ]
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
+              },
+              {
+                "type": "metric",
+                "x": 0,
+                "y": 10,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${DxpfImageProcessingPluginQueueDepthAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DxpfImageProcessingPluginQueueDepthAlarm}"
+                    ]
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
+              },
+              {
+                "type": "metric",
+                "x": 10,
+                "y": 10,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${DxpfImageProcessingPluginQueueTimeAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DxpfImageProcessingPluginQueueTimeAlarm}"
+                    ]
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
               }
-            },
-            {
-              "type": "metric",
-              "x": 10,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${DocumentsetPluginQueueTimeAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DocumentsetPluginQueueTimeAlarm}"
-                  ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
-              }
-            },
-            {
-              "type": "metric",
-              "x": 0,
-              "y": 10,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${DxpfImageProcessingPluginQueueDepthAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DxpfImageProcessingPluginQueueDepthAlarm}"
-                  ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
-              }
-            },
-            {
-              "type": "metric",
-              "x": 10,
-              "y": 10,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${DxpfImageProcessingPluginQueueTimeAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DxpfImageProcessingPluginQueueTimeAlarm}"
-                  ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
-              }
-            }
-          ]
-        }
+            ]
+          }

@@ -16,45 +16,46 @@ Resources:
     Type: "AWS::CloudWatch::Dashboard"
     Properties:
       DashboardName: "Service_IWpro-DMS"
-      DashboardBody: !Sub |
-        {
-          "widgets": [
-            {
-              "type": "metric",
-              "x": 0,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${DaitoRegistrationPluginQueueDepthAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DaitoRegistrationPluginQueueDepthAlarm}"
+      DashboardBody:
+        Fn::Sub: |
+          {
+            "widgets": [
+              {
+                "type": "metric",
+                "x": 0,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${DaitoRegistrationPluginQueueDepthAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DaitoRegistrationPluginQueueDepthAlarm}"
                     ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
-              }
-            },
-            {
-              "type": "metric",
-              "x": 10,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${DaitoRegistrationPluginQueueTimeAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DaitoRegistrationPluginQueueTimeAlarm}"
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
+              },
+              {
+                "type": "metric",
+                "x": 10,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${DaitoRegistrationPluginQueueTimeAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${DaitoRegistrationPluginQueueTimeAlarm}"
                     ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
               }
-            }
-          ]
-        }
+            ]
+          }
 

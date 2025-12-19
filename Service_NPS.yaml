@@ -16,44 +16,45 @@ Resources:
     Type: "AWS::CloudWatch::Dashboard"
     Properties:
       DashboardName: "Service_NPS"
-      DashboardBody: !Sub |
-        {
-          "widgets": [
-            {
-              "type": "metric",
-              "x": 0,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm}"
+      DashboardBody:
+        Fn::Sub: |
+          {
+            "widgets": [
+              {
+                "type": "metric",
+                "x": 0,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm}"
                     ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
-              }
-            },
-            {
-              "type": "metric",
-              "x": 10,
-              "y": 0,
-              "width": 10,
-              "height": 10,
-              "properties": {
-                "title": "${MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm}",
-                "annotations": {
-                  "alarms": [
-                    "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm}"
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
+              },
+              {
+                "type": "metric",
+                "x": 10,
+                "y": 0,
+                "width": 10,
+                "height": 10,
+                "properties": {
+                  "title": "${MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm}",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm}"
                     ]
-                },
-                "view": "timeSeries",
-                "stacked": false,
-                "type": "chart"
+                  },
+                  "view": "timeSeries",
+                  "stacked": false,
+                  "type": "chart"
+                }
               }
-            }
-          ]
-        }
+            ]
+          }
