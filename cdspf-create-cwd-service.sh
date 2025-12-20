@@ -2,49 +2,46 @@
 set -Eeuo pipefail
 
 # =========
-# Arguments
+# Config
 # =========
-RUN_ID="${1:-}"
-SEARCH_PREFIX="${2:-}"
-LOG_GROUP_NAME_NEW="${3:-}"
-LOG_GROUP_NAME_OLD="${4:-}"
-DB_NAME="${5:-}"
+CONFIG_FILE="${1:-./cdspf-stg.conf}"
+
+[[ -f "${CONFIG_FILE}" ]] || {
+  echo "ERROR: Config file not found: ${CONFIG_FILE}"
+  exit 1
+}
+
+# shellcheck disable=SC1090
+source "${CONFIG_FILE}"
 
 [[ -n "${RUN_ID}" ]] || {
   echo "ERROR: RUN_ID is required"
-  echo "Example: cdspf-stg-ap-ne1-1-11-13-2025-12-03T10-57-17-"
   exit 1
 }
 
 [[ -n "${SEARCH_PREFIX}" ]] || {
   echo "ERROR: SEARCH_PREFIX is required"
-  echo "Example: cdspf-stg-ap-ne1-1-"
   exit 1
 }
 
 [[ -n "${LOG_GROUP_NAME_NEW}" ]] || {
   echo "ERROR: New LogGroup name (3rd arg) is required"
-  echo "Example: cdspf/.... (new log group)"
   exit 1
 }
 
 [[ -n "${LOG_GROUP_NAME_OLD}" ]] || {
   echo "ERROR: Old LogGroup name (4th arg) is required"
-  echo "Example: cdspf/.... (old log group)"
   exit 1
 }
 
 [[ -n "${DB_NAME}" ]] || {
   echo "ERROR: DB name (5th arg) is required"
-  echo "Example: cdspf-dev-ap-ne1"
   exit 1
 }
 
 # =========
 # Settings
 # =========
-AWS_REGION="${AWS_REGION:-ap-northeast-1}"
-AWS_PROFILE="${AWS_PROFILE:-}"
 ALARM_PREFIX1="PluginQueueDepthAlarm"
 ALARM_PREFIX2="PluginQueueTimeAlarm"
 
