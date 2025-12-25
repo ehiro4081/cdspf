@@ -50,7 +50,7 @@ export AWS_PAGER=""
 # =========
 # Utilities
 # =========
-log() { printf '[%s] %s\n' "$(date -Is)" "$*"; }
+log() { printf '[%s] %s\n' "$(date -Is)" "$*" >&2; }
 die() { log "ERROR: $*"; exit 1; }
 
 need_cmd() {
@@ -91,21 +91,16 @@ deploy_stack() {
 # =========
 # Finders
 # =========
-#find_latest_log_group() {
-#  local regex="$1"
-#  aws_cli logs describe-log-groups \
-#    --query 'logGroups[].logGroupName' \
-#    --output json |
-#  jq -r "map(select(test(\"${regex}\"))) | sort | last // empty"
-#}
-
 find_latest_alarm() {
   local regex="$1"
+  log "regex: ${regex}"
+
   aws_cli cloudwatch describe-alarms \
     --query 'MetricAlarms[].AlarmName' \
     --output json |
-  jq -r "map(select(test(\"${regex}\"))) | sort | last // empty"
+  jq -r --arg re "${regex}" 'map(select(test($re))) | sort | last // empty'
 }
+
 
 require_value() {
   [[ -n "$2" ]] || die "No matching $1 found"
@@ -133,6 +128,8 @@ deploy_with_alarms() {
     local key="$1" regex="$2"; shift 2
     local alarm
     alarm="$(find_latest_alarm "${regex}")"
+    printf 'alarm(raw)=[%q]\n' "$alarm" >&2
+#   log "Found: ${alarm}"
     require_value "Alarm (${regex})" "${alarm}"
     params+=("${key}=${alarm}")
   done
@@ -153,30 +150,30 @@ main() {
   deploy_with_alarms \
     "${RUN_ID}Service-IWpro-Auto-Dashboard-Stack" \
     "Service_IWpro-Auto.yaml" \
-    "DocumentsetPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
-    "DocumentsetPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$" \
-    "DxpfImageProcessingPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
-    "DxpfImageProcessingPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
+    "DocumentsetPluginQueueDepthAlarm" "^${RUN_ID}.*DocumentsetPluginQueueStack.*${ALARM_PREFIX1}.*$" \
+    "DocumentsetPluginQueueTimeAlarm"  "^${RUN_ID}.*DocumentsetPluginQueueStack.*${ALARM_PREFIX2}.*$" \
+    "DxpfImageProcessingPluginQueueDepthAlarm" "^${RUN_ID}.*DxpfImageProcessingPluginQueueStack.*${ALARM_PREFIX1}.*$" \
+    "DxpfImageProcessingPluginQueueTimeAlarm"  "^${RUN_ID}.*DxpfImageProcessingPluginQueueStack.*${ALARM_PREFIX2}.*$"
 
   deploy_with_alarms \
     "${RUN_ID}Service-IWpro-DMS-Dashboard-Stack" \
     "Service_IWpro-DMS.yaml" \
-    "DaitoRegistrationPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
-    "DaitoRegistrationPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
+    "DaitoRegistrationPluginQueueDepthAlarm" "^${RUN_ID}.*DaitoRegistrationPluginQueueStack.*${ALARM_PREFIX1}.*$" \
+    "DaitoRegistrationPluginQueueTimeAlarm"  "^${RUN_ID}.*DaitoRegistrationPluginQueueStack.*${ALARM_PREFIX2}.*$"    
 
   deploy_with_alarms \
     "${RUN_ID}Service-NPS-Dashboard-Stack" \
     "Service_NPS.yaml" \
-    "MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
-    "MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
+    "MsofficeToPdfForNpsPluginLambdaQueueDepthAlarm" "^${RUN_ID}.*MsofficeToPdfForNpsPluginLambdaStack.*${ALARM_PREFIX1}.*$" \
+    "MsofficeToPdfForNpsPluginLambdaQueueTimeAlarm"  "^${RUN_ID}.*MsofficeToPdfForNpsPluginLambdaStack.*${ALARM_PREFIX2}.*$" 
 
   deploy_with_alarms \
     "${RUN_ID}Service-attention-Dashboard-Stack" \
     "Service_attention.yaml" \
-    "FormatConversionPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
-    "FormatConversionPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$" \
-    "ImageOperationPluginQueueDepthAlarm" "^${SEARCH_PREFIX}.*${ALARM_PREFIX1}.*$" \
-    "ImageOperationPluginQueueTimeAlarm"  "^${SEARCH_PREFIX}.*${ALARM_PREFIX2}.*$"
+    "FormatConversionPluginQueueDepthAlarm" "^${RUN_ID}.*FormatConversionPluginQueueStack.*${ALARM_PREFIX1}.*$" \
+    "FormatConversionPluginQueueTimeAlarm"  "^${RUN_ID}.*FormatConversionPluginQueueStack.*${ALARM_PREFIX2}.*$" \
+    "ImageOperationPluginQueueDepthAlarm" "^${RUN_ID}.*ImageOperationPluginQueueStack.*${ALARM_PREFIX1}.*$" \
+    "ImageOperationPluginQueueTimeAlarm"  "^${RUN_ID}.*ImageOperationPluginQueueStack.*${ALARM_PREFIX2}.*$"
 
   log "All dashboards deployed successfully"
 }

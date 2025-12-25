@@ -29,7 +29,7 @@ Resources:
                       "x": 0,
                       "y": 0,
                       "width": 24,
-                      "height": 6,
+                      "height": 7,
                       "properties": {
                         "query": "SOURCE \"${LogGroupNameNew}\" | SOURCE \"${LogGroupNameOld}\" |\nfilter @logStream like /task-service-system/\n| fields @timestamp, @message\n| filter @message like /,TaskDefInvoker,.*\"type\":\"system:startTask\".*,\"taskDefId\":\"daito-scan-main/\n| parse @message /,(?<requestId>[^,]+),[^,]*,task-service,.*\"id\":\"(?<taskInstanceId>[^,]+)\".*\"userId\":\"(?<userId>[^\\\"]*)\".*\"contentUris\":\\[\"(?<contentUri>[^\\\"]+)\".*\"filename\":\"(?<filename>[^\\\"]+)\"/\n| stats min(@timestamp),count(taskInstanceId) as taskCount by userId,contentUri,filename\n| filter taskCount > 1\n| limit 10000",
                         "queryBy": "logGroupNames",
@@ -48,7 +48,7 @@ Resources:
                     {
                       "type": "log",
                       "x": 0,
-                      "y": 6,
+                      "y": 7,
                       "width": 24,
                       "height": 7,
                       "properties": {
